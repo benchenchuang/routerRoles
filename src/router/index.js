@@ -34,6 +34,7 @@ router.beforeEach((to, from, next) => {
     if(userInfo){
       store.dispatch('userInfo', userInfo)//用户信息存入vuex
       store.dispatch('getPermission', 'roottoken').then(res=>{
+        console.log(222)
         let actualRouter = res;
         let originPath = util.deepCopy(AllRoutesData);
         originPath[0].children = actualRouter;
@@ -41,7 +42,9 @@ router.beforeEach((to, from, next) => {
             path: '*',
             redirect: '/404'
         }]));
-        next({ ...to, replace: true })
+        setTimeout(()=>{
+          next({ ...to, replace: true })
+        },100)
       });
     }else{
       next({
