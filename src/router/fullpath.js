@@ -22,15 +22,14 @@ export default [{
     path: '/goods',
     name: '商品管理',
     meta: {
-      icon: '&#xe62e;',
-      name: '商品管理'
+      icon: '&#xe62e;'
     },
     component: Abstract,
     children: [{
       path: 'list',
       name: '商品信息',
       meta: {
-        name: '商品信息'
+        
       },
       component: (resolve) => require(['../pages/goods-list.vue'], resolve)
     }]

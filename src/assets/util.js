@@ -3,20 +3,23 @@ import { Message } from 'element-ui'
 Vue.component(Message.name, Message)
 
 //localStorage
-export const session = (key, value)=>{
-  if (value === void(0)) {
+export const session = function(key, value){
+  if (value == void(0)) {
     var lsVal = localStorage.getItem(key);
+    if(lsVal.indexOf('{')>-1){
+      lsVal = JSON.parse(lsVal);
+    }
     return lsVal;
   }else {
-    if (typeof(value)==="object" || Array.isArray(value)) {
-      value =JSON.stringify(value);
+    if (typeof(value)=="object" || Array.isArray(value)) {
+      value = JSON.stringify(value);
     }
     return localStorage.setItem(key, value);
   }
 } 
 
 //生成随机数
-export const getUUID =(len)=>{
+export const getUUID = function (len) {
   len = len || 6;
   len = parseInt(len, 10);
   len = isNaN(len) ? 6 : len;
@@ -29,18 +32,18 @@ export const getUUID =(len)=>{
   return uuid;
 };
 //深拷贝
-export const deepCopy = (source)=>{
+export const deepcopy = function (source) {
   if (!source) {
-      return source;
+    return source;
   }
   let sourceCopy = source instanceof Array ? [] : {};
   for (let item in source) {
-      sourceCopy[item] = typeof source[item] === 'object' ? deepCopy(source[item]) : source[item];
+    sourceCopy[item] = typeof source[item] === 'object' ? deepcopy(source[item]) : source[item];
   }
   return sourceCopy;
-}
+};
 //菜单数据组织
-export const buildMenu =  (array, ckey) =>{
+export const buildMenu = function (array, ckey) {
   let menuData = [];
   let indexKeys = Array.isArray(array) ? array.map((e) => {return e.id}) : [];
   ckey = ckey || 'parent_id';
@@ -48,7 +51,7 @@ export const buildMenu =  (array, ckey) =>{
     //一级菜单
     if (!e[ckey] || (e[ckey]===e.id)) {
       delete e[ckey];
-      menuData.push(deepCopy(e)); //深拷贝
+      menuData.push(deepcopy(e)); //深拷贝
     }else if(Array.isArray(indexKeys)){
       //检测ckey有效性
       let parentIndex = indexKeys.findIndex(function(id){
@@ -81,7 +84,7 @@ export const buildMenu =  (array, ckey) =>{
   return menuData;
 }
 //日期格式化
-export const dateFormat =  (source, ignore_minute)=> {
+export const dateFormat = function (source, ignore_minute) {
   var myDate;
   var separate = '-';
   var minute = '';
@@ -111,7 +114,7 @@ export const dateFormat =  (source, ignore_minute)=> {
   }
 };
 //ajax错误处理
-export const catchError = (error) =>{
+export const catchError = function(error) {
   if (error.response) {
     switch (error.response.status) {
       case 400:

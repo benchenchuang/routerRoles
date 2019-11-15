@@ -9,7 +9,6 @@
 .el-tree-node__content:hover .extendGroup {
   opacity: 1;
 }
-
 </style>
 
 <template>

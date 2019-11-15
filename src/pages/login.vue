@@ -51,10 +51,7 @@
 <script>
 import axios from 'axios';
 import CryptoJS from "crypto-js";
-import router from '../router/index'
 import * as util from '../assets/util.js';
-import store from '@/vuex/index'
-import AllRoutesData from '../router/fullpath';
 //登录
 const requestLogin = params => {
   let words = CryptoJS.enc.Utf8.parse(params.password);
@@ -62,6 +59,7 @@ const requestLogin = params => {
   params.password = base64;
   return axios.get(`http://rap2api.taobao.org/app/mock/224/web`, {params})
 };
+
 export default {
   data() {
     return {
@@ -78,7 +76,6 @@ export default {
   },
   methods: {
     login() {
-      let redirect = decodeURIComponent(this.$route.query.redirect || '/');
       var vm = this;
       if (!vm.username) {
         vm.$message.error('请填写用户名！！！');
@@ -94,23 +91,8 @@ export default {
       requestLogin(loginParams).then(res => {
         vm.isBtnLoading = false;
         if(res.data.token){
-          let userInfo = {username:"root",token:"546464654"};
-          util.session('userInfo', userInfo);
-          store.dispatch('userInfo', userInfo);
-          store.dispatch('getPermission', res.data.token).then(res=>{
-              let actualRouter = res;
-              let originPath = util.deepCopy(AllRoutesData);
-              originPath[0].children = actualRouter;
-              router.addRoutes(originPath.concat([{
-                  path: '*',
-                  redirect: '/404'
-              }]));
-          })
-          setTimeout(()=>{
-              this.$router.push({
-                  path: redirect
-              })
-          },1000)
+          util.session('token', res.data);
+          vm.$emit('login', vm.$router.currentRoute.query.from);
         }else{
           return Promise.reject({
             message: '登录异常！'

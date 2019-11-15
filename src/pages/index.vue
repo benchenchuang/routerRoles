@@ -86,16 +86,29 @@
     <el-row type="flex" class="g-head">
       <a href="http://refined-x.com" target="_blank" title="Vue权限控制" class="logo" >Vue-Access-Control</a>
       <div class="nav">
-        <div class="usermenu">
+        <div class="usermenu" v-if="user.id">
           欢迎您：{{user.name}}
           <router-link :to="{path: '/'}"><i class="el-icon-location"></i>首页</router-link>
           <a href="javascript:;" @click="logout"><i class="el-icon-circle-close"></i>退出</a>
         </div>
       </div>
     </el-row>
+
     <el-menu :default-active="activeMenu" class="g-side" router >
-        <menu-list/>
+      <template v-for="(route, index) in menus">
+        <template v-if="route.children">
+          <el-submenu :key="index" :index="route.name">
+            <template slot="title">
+              {{route.meta.name || route.name}}</template>
+            <el-menu-item v-for="(cRoute, cIndex) in route.children" :key="cIndex" :index="cRoute.name" :route="cRoute"><i class="ion menuIcon" v-html="cRoute.meta.icon"></i>{{cRoute.meta.name || cRoute.name}}</el-menu-item>
+          </el-submenu>
+        </template>
+        <template v-else>
+          <el-menu-item :route="route" :index="route.name" :key="'nav'+index">{{route.meta.name || route.name}}</el-menu-item>
+        </template>
+      </template>
     </el-menu>
+
     <div class="g-statues-bar p-lr">
       <el-breadcrumb separator="/" class="bread" id="mybread">
         <el-breadcrumb-item v-for="(item,index) in breadcrumbs" :key="index" :to="item">
@@ -103,25 +116,25 @@
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-    <!-- <template v-if="$route.path=='/'">
+    <template v-if="$route.path=='/'">
       <dashboard />
-    </template> -->
-    <template>
+    </template>
+    <template v-else>
       <router-view id="main"></router-view>
     </template>
     
   </div>
 </template>
 <script>
-import menuList from '@/components/menuList'
+
 export default {
   components: {
-    dashboard: () => import("../components/dashboard.vue"),
-    menuList
+    dashboard: () => import("../components/dashboard.vue")
   },
   data() {
     return {
-      user: this.$root.userData
+      user: this.$root.userData,
+      menus: this.$root.menuData
     };
   },
   computed: {
@@ -146,10 +159,9 @@ export default {
     }
   },
   created: function() {
-    console.log('home')
-    // if (!this.user) {
-    //   this.$router.push({ path: "/login" });
-    // }
+    if (!this.user) {
+      this.$router.push({ path: "/login" });
+    }
   }
 };
 </script>
